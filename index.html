@@ -1,0 +1,184 @@
+<html>
+
+<head>
+    <title>Speech-To-Text-Converter</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.1/css/font-awesome.min.css" />
+
+    <style type="text/css">
+        body {
+            font-family: verdana;
+            width: 100%;
+            background-color: black;
+            background-image: url("bg.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            overflow-x: hidden;
+        }
+
+        .spinner {
+            width: 80px;
+            height: 80px;
+
+            border: 2px solid #f3f3f3;
+            border-top: 3px solid #f25a41;
+            border-radius: 100%;
+
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+
+            animation: spin 1s infinite linear;
+        }
+
+        .center {
+            border: 10px solid cyan;
+        }
+
+        #result {
+            height: 180px;
+            box-shadow: 0 0 10px 0 #bbb;
+            margin-bottom: 30px;
+            font-size: 14px;
+            line-height: 25px;
+        }
+
+        button-con {
+            position: relative;
+            border: 1px solid currentColor;
+            font-size: 1.1rem;
+            color: #4f93ce;
+            margin: 3rem 0;
+            padding: 0.75rem 3rem;
+            cursor: pointer;
+            -webkit-transition: background-color 0.28s ease, color 0.28s ease, box-shadow 0.28s ease;
+            transition: background-color 0.28s ease, color 0.28s ease, box-shadow 0.28s ease;
+            overflow: hidden;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        }
+        .author-card{
+            padding: 0;
+            margin-left:auto ;
+            margin-right: auto;
+            display: block;
+        }
+        .link{
+            display: flex;
+            font-size: 40px;
+        }
+        .link li{
+            text-decoration: none;
+            display: inline-block;
+        }
+        .link li a{
+            padding: 10px;
+            display: block;
+            color: orangered;
+        }
+        .link li a:hover{
+            color:white;
+            background-color: royalblue;
+        }
+
+
+    </style>
+</head>
+
+<body>
+    <center><img class="center rounded-circle"
+            src="https://cdn.pixabay.com/photo/2021/09/27/22/30/microphone-6662435_960_720.png" height="300px"></center>
+    <h1 align="center"><span class="text-light">Speech to Text Converter </span><br><span
+            style="font-size: 15px;color: black; font-weight: lighter;"></span></h1>
+    <center>
+        <h1 class="text-primary">Converting Speech Input To Text</h1>
+    </center></br>
+
+    <div id="result" align="center" class="bg-light">
+        <br>
+        <label style="font-size: 15px; color: black">Speech Input:</label>
+        <form action="http://localhost:5000/result" method="POST">
+            <input type="text" id="result1" size="40" class="bg-dark text-light" maxlength=100 name="Name" /></br>
+            <div class="text-center ">
+            <button type="button" class=" btn btn-outline-primary" style="position:absolute; left:48%"
+                onclick="startConverting();"><i class="fa fa-microphone"></i></button>
+            <!-- click this button to stop converting-->
+            <button type="button" class=" btn btn-outline-danger" style="position:absolute; left:52%"
+                onclick="stopConverting();"><i class="fa fa-remove"></i></button>
+            </div>
+            <br>
+            <hr>
+            <p><input type="submit" class="btn btn-success" value="submit" /></p>
+        </form>
+    </div>
+      <div class="card author-card bg-dark" style="width: 18rem;">
+        <img class="card-img-top rounded-circle" src="images/My-pic.png"><div class="card-body text-center">
+            <h2 class="card-title text-primary fw-bold">Hello, I am<br> Avanish Srivastava</h2>
+          <p class="card-text text-warning">This is my mini project named Speech To Text Conveter,Speech to text converter technology is one of the fast growing  engineering technologies.
+</p>
+          <ul class="link  justify-content-center">
+              <li>
+                  <a href="https://www.linkedin.com/in/avanish-srivastava-533035203"><i class="fa fa-linkedin"></i></a>
+              </li>
+              <li><a href="https://github.com/Avanishsri31"><i class="fa fa-github"></i></a>
+                </li>
+            <li><a href="https://twitter.com/Avanish66224549"><i class="fa fa-twitter"></i></a></li>
+          </ul>
+        </div>
+      </div>
+
+
+
+    <script type="text/javascript">
+
+        var overlay = document.getElementById("overlay");
+
+
+        var r = document.getElementById('result1');
+        var speechRecognizer = new webkitSpeechRecognition();// a new speech recognition object
+
+
+        function startConverting() {
+            if ('webkitSpeechRecognition' in window) {
+
+                speechRecognizer.continuous = true;
+                speechRecognizer.interimResults = true;
+                speechRecognizer.lang = 'en-IN';
+                speechRecognizer.start();
+                var finalTranscripts = '';
+                speechRecognizer.onresult = function (event) {
+                    var interimTranscripts = '';
+                    for (var i = event.resultIndex; i < event.results.length; i++) {
+                        var transcript = event.results[i][0].transcript;
+                        transcript.replace("\n", "<br>");
+                        if (event.results[i].isFinal) {
+                            finalTranscripts += transcript;
+                        } else {
+                            interimTranscripts += transcript;
+                        }
+                    }
+                    r.value = finalTranscripts + interimTranscripts;
+                };
+                speechRecognizer.onerror = function (event) {
+                };
+            } else {
+                r.innerHTML = 'No browser support. Please upgrade your browser';
+            }
+        }
+
+        function stopConverting() {
+            speechRecognizer.stop();
+        }
+
+    </script>
+</body>
+
+</html>
